@@ -46,6 +46,8 @@ class FontFiles(object):
         Return a sequence of directory paths likely to contain fonts on the
         current platform.
         """
+        if sys.platform.startswith("linux"):
+            return cls._linux_font_directories()
         if sys.platform.startswith("darwin"):
             return cls._os_x_font_directories()
         if sys.platform.startswith("win32"):
@@ -68,6 +70,14 @@ class FontFiles(object):
                 path = os.path.abspath(os.path.join(root, filename))
                 with _Font.open(path) as f:
                     yield ((f.family_name, f.is_bold, f.is_italic), path)
+
+    @classmethod
+    def _linux_font_directories(cls):
+        """
+        Return a sequence of directory paths on Linux in which fonts are
+        likely to be located.
+        """
+        return ["/usr/share/fonts", "/usr/local/share/fonts", os.path.expanduser("~/.fonts")]
 
     @classmethod
     def _os_x_font_directories(cls):
